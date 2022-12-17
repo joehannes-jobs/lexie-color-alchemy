@@ -4,3 +4,11 @@ type TEnumerate<N extends number, Acc extends number[] = []> = Acc['length'] ext
   ? Acc[number]
   : TEnumerate<N, [...Acc, Acc['length']]>
 export type TRange<FROM extends number, TO extends number> = Exclude<TEnumerate<TO>, TEnumerate<FROM>>;
+
+export type TColorComponent = TRange<0, 255>;
+export type TColor = {
+  r: TColorComponent;
+  g: TColorComponent;
+  b: TColorComponent;
+}
+
