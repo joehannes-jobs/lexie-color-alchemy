@@ -1,7 +1,4 @@
-import * as R from "ramda";
-
 import { TColor, TColorComponent } from "./types";
-
 
 /**
  * Calculates the delta of 2 colors, respectively of all its 3 (rgb) color components
@@ -31,5 +28,19 @@ export const shined = (c: TColor, ...rest: TColor[]): TColor => {
     r: (r * f) as TColorComponent,
     g: (g * f) as TColorComponent,
     b: (b * f) as TColorComponent,
-  }
+  };
+}
+
+/**
+ * @param baseColor - the gameboards tile to be shined
+ * @param i - the index pos of baseColor in the current row/col of the gameboard
+ * @param len - the length of the cur row/col of the gameboard
+ * @returns
+ */
+export const bleed = (baseColor: TColor, i: number, len: number): TColor => {
+  return {
+    r: (baseColor.r * (len - i) / (len + 1)) as TColorComponent,
+    g: (baseColor.g * (len - i) / (len + 1)) as TColorComponent,
+    b: (baseColor.b * (len - i) / (len + 1)) as TColorComponent,
+  };
 }
