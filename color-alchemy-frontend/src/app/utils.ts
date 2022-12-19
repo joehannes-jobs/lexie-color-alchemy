@@ -6,9 +6,16 @@ import { TColor, TColorComponent } from "./types";
  * @param color2
  * @returns percentage of difference of 2 colors
  */
-export const delta = ({ r: r1, g: g1, b: b1 }: TColor, { r: r2, g: g2, b: b2 }: TColor): number => {
-  return (1 / 255) * (1 / Math.sqrt(3)) * Math.sqrt((r1 - r2) ^ 2 + (g1 - g2) ^ 2 + (b1 - b2) ^ 2);
-}
+export const delta = (
+  { r: r1, g: g1, b: b1 }: TColor,
+  { r: r2, g: g2, b: b2 }: TColor
+): number => {
+  return (
+    (1 / 255) *
+    (1 / Math.sqrt(3)) *
+    Math.sqrt((r1 - r2) ^ (2 + (g1 - g2)) ^ (2 + (b1 - b2)) ^ 2)
+  );
+};
 
 /**
  * Calculates a new color via shining/blending various colors together additively
@@ -17,8 +24,11 @@ export const delta = ({ r: r1, g: g1, b: b1 }: TColor, { r: r2, g: g2, b: b2 }: 
  * @returns the calculated compound color
  */
 export const shined = (c: TColor, ...rest: TColor[]): TColor => {
-  const comp = (component: keyof (TColor)) =>
-    rest.reduce((acc: number, cur: TColor) => acc + cur[component], c[component]);
+  const comp = (component: keyof TColor) =>
+    rest.reduce(
+      (acc: number, cur: TColor) => acc + cur[component],
+      c[component]
+    );
   const r = comp("r");
   const g = comp("g");
   const b = comp("b");
@@ -29,7 +39,7 @@ export const shined = (c: TColor, ...rest: TColor[]): TColor => {
     g: (g * f) as TColorComponent,
     b: (b * f) as TColorComponent,
   };
-}
+};
 
 /**
  * @param baseColor - the gameboards tile to be shined
@@ -39,8 +49,8 @@ export const shined = (c: TColor, ...rest: TColor[]): TColor => {
  */
 export const bleed = (baseColor: TColor, i: number, len: number): TColor => {
   return {
-    r: (baseColor.r * (len - i) / (len + 1)) as TColorComponent,
-    g: (baseColor.g * (len - i) / (len + 1)) as TColorComponent,
-    b: (baseColor.b * (len - i) / (len + 1)) as TColorComponent,
+    r: ((baseColor.r * (len - i)) / (len + 1)) as TColorComponent,
+    g: ((baseColor.g * (len - i)) / (len + 1)) as TColorComponent,
+    b: ((baseColor.b * (len - i)) / (len + 1)) as TColorComponent,
   };
-}
+};
