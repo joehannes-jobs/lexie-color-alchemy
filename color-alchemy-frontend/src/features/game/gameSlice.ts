@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState, AppThunk } from "../../app/store";
 import { fetchGame } from "./gameAPI";
-import { TColorComponent } from "../../app/types";
+import { TColor, TColorComponent } from "../../app/types";
 
 export interface GameState {
   loading: boolean;
@@ -9,7 +9,7 @@ export interface GameState {
   width: number | null;
   height: number | null;
   maxMoves: number | null;
-  target: [TColorComponent, TColorComponent, TColorComponent];
+  target: [TColorComponent?, TColorComponent?, TColorComponent?];
   gameBoardSources: {
     top: TColorComponent[];
     right: TColorComponent[];
@@ -33,7 +33,7 @@ const initialState: GameState = {
     left: [],
   },
   gameBoardTiles: [[]],
-  target: [0, 0, 0],
+  target: [],
   closestColorTile: [0, 0],
 };
 
