@@ -78,6 +78,7 @@ export const gameSlice = createSlice({
 export const { step } = gameSlice.actions;
 
 export const selectGame = (state: RootState) => state.game;
-export const selectClosestTile = (state: RootState) => state.game.closestColorTile;
+export const selectClosestTile = (state: RootState) =>
+  state.game.closestColorTile;
 
 export default gameSlice.reducer;
