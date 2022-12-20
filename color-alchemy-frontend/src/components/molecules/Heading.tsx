@@ -1,20 +1,25 @@
 import React, { FC } from "react";
-import { GameState } from "../../features/game/gameSlice";
+import { IGameState, selectClosestColor } from "../../features/game/gameSlice";
 import { TColor } from "../../app/types";
 import { H1, H2 } from "../atoms/Heading";
 import { Tile } from "../atoms/Tile";
 import { Delta } from "../atoms/Delta";
+import { useAppSelector } from "../../app/hooks";
 
 interface IUserHeadingProps {
-  userId: Pick<GameState, "userId"> & string;
+  userId: Pick<IGameState, "userId">;
 }
 
 interface IMovesHeadingProps {
-  maxMoves: Pick<GameState, "userId"> & string;
+  maxMoves: Pick<IGameState, "maxMoves">;
 }
 
 interface ITargetHeadingProps {
   targetColor: TColor;
+}
+
+interface IClosestColorHeadingProps {
+  closestColor: TColor;
 }
 /*
  * @description a concrete RGB Alchemy Heading wrapper
@@ -41,13 +46,26 @@ export const MovesHeading: FC<IMovesHeadingProps> = ({ maxMoves }) => (
 );
 
 /*
- * @description a concrete Heading wrapper
+ * @description a concrete Heading wrapper for displaying the Target Color
  * @param targetColor - the current games' target color
  * @returns a simple Heading React component
  */
 export const TargetHeading: FC<ITargetHeadingProps> = ({ targetColor }) => (
-  <H2 label="Target color ">
+  <H2 label="Target color&nbsp;">
     <Tile color={targetColor} />
+  </H2>
+);
+
+/*
+ * @description a concrete Heading wrapper for Displaying the closest Color & Delta
+ * @param targetColor - the current games' target color
+ * @returns a simple Heading React component
+ */
+export const ClosestColorHeading: FC<IClosestColorHeadingProps> = ({
+  closestColor,
+}) => (
+  <H2 label="Closest color&nbsp;">
+    <Tile color={closestColor ?? { r: 0, g: 0, b: 0 }} classNames="mr-2" />
     <Delta />
   </H2>
 );
