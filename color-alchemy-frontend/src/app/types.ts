@@ -11,7 +11,7 @@ export type TRange<FROM extends number, TO extends number> = Exclude<
   TEnumerate<FROM>
 >;
 
-export type TColorComponent = TRange<0, 255>;
+export type TColorComponent = TRange<0, 256>;
 export type TColor = {
   r: TColorComponent;
   g: TColorComponent;
