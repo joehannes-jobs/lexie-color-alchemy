@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState, AppThunk } from "../../app/store";
 import { fetchGame } from "./gameAPI";
-import { TColor, TColorComponent } from "../../app/types";
+import { TRange, TColor, TColorComponent } from "../../app/types";
 
 export interface GameState {
   loading: boolean;
@@ -18,6 +18,7 @@ export interface GameState {
   };
   gameBoardTiles: [[TColorComponent?]];
   closestColorTile: [number, number];
+  delta: TRange<0, 101>,
 }
 
 const initialState: GameState = {
@@ -35,6 +36,7 @@ const initialState: GameState = {
   gameBoardTiles: [[]],
   target: [],
   closestColorTile: [0, 0],
+  delta: 100,
 };
 
 export const fetchGameAsync = createAsyncThunk(
@@ -80,5 +82,6 @@ export const { step } = gameSlice.actions;
 export const selectGame = (state: RootState) => state.game;
 export const selectClosestTile = (state: RootState) =>
   state.game.closestColorTile;
+export const selectGameDelta = (state: RootState) => state.game.delta;
 
 export default gameSlice.reducer;
