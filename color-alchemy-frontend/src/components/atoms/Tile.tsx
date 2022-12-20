@@ -35,9 +35,11 @@ export const Tile: FC<ITileProps> = ({
   const [isClosest, setIsClosest] = useState(false);
   const classNames = classnames(
     "inline-block",
+    "rounded",
+    "border-2",
+    "border-gray-200",
     {
-      "border-2": isClosest,
-      rounded: isClosest,
+      "border-red": isClosest,
     },
     additionalClassNames
   );
@@ -50,6 +52,8 @@ export const Tile: FC<ITileProps> = ({
     <div
       className={classNames}
       style={{
+        width: "1.5rem",
+        height: "1.5rem",
         backgroundColor: `rgb(
           ${color.r as number},
           ${color.g as number},
