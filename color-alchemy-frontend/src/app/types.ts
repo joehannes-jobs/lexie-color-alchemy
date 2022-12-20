@@ -1,4 +1,5 @@
 // Range number type via tail recursion elimination
+// eslint-disable-next-line max-len
 // https://stackoverflow.com/questions/39494689/is-it-possible-to-restrict-number-to-a-certain-range/70307091#70307091
 type TEnumerate<
   N extends number,
