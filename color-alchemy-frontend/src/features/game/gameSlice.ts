@@ -3,12 +3,12 @@ import { RootState, AppThunk } from "../../app/store";
 import { fetchGame } from "./gameAPI";
 import { TRange, TColor, TColorComponent } from "../../app/types";
 
-export interface GameState {
+export interface IGameState {
   loading: boolean;
-  userId: string | null;
-  width: number | null;
-  height: number | null;
-  maxMoves: number | null;
+  userId: string;
+  width: number;
+  height: number;
+  maxMoves: number;
   target: [TColorComponent?, TColorComponent?, TColorComponent?];
   gameBoardSources: {
     top: TColorComponent[];
@@ -16,17 +16,17 @@ export interface GameState {
     bottom: TColorComponent[];
     left: TColorComponent[];
   };
-  gameBoardTiles: [[TColorComponent?]];
+  gameBoardTiles: [[TColor?]];
   closestColorTile: [number, number];
-  delta: TRange<0, 101>,
+  delta: TRange<0, 101>;
 }
 
-const initialState: GameState = {
+const initialState: IGameState = {
   loading: true,
-  userId: null,
-  width: null,
-  height: null,
-  maxMoves: null,
+  userId: "",
+  width: 0,
+  height: 0,
+  maxMoves: Infinity,
   gameBoardSources: {
     top: [],
     right: [],
@@ -41,7 +41,7 @@ const initialState: GameState = {
 
 export const fetchGameAsync = createAsyncThunk(
   "game/fetchGame",
-  async (userId: string): Promise<Partial<GameState>> => {
+  async (userId: string): Promise<Partial<IGameState>> => {
     const response = await fetchGame(userId);
     // The value we return becomes the `fulfilled` action payload
     return response.json();
@@ -53,7 +53,7 @@ export const gameSlice = createSlice({
   initialState,
   reducers: {
     step: (state) => {
-      state.maxMoves! -= 1;
+      state.maxMoves -= 1;
     },
   },
   extraReducers: (builder) => {
@@ -83,5 +83,10 @@ export const selectGame = (state: RootState) => state.game;
 export const selectClosestTile = (state: RootState) =>
   state.game.closestColorTile;
 export const selectGameDelta = (state: RootState) => state.game.delta;
+export const selectClosestColor = (state: RootState) => {
+  const [x, y] = state.game.closestColorTile;
+
+  return state.game.gameBoardTiles[x][y];
+};
 
 export default gameSlice.reducer;
