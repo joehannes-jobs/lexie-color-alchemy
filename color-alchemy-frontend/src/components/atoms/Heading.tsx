@@ -1,5 +1,5 @@
 import React, { FC, PropsWithChildren } from "react";
-import { GameState } from "../../features/game/gameSlice";
+import { IGameState } from "../../features/game/gameSlice";
 
 interface ITitleProps {
   title: string;
@@ -7,10 +7,7 @@ interface ITitleProps {
 
 export interface IHeadingProps {
   label: string;
-  prop?:
-    | string
-    | number
-    | (Pick<GameState, "userId" | "maxMoves"> & (string | number));
+  prop?: Pick<IGameState, "userId"> | Pick<IGameState, "maxMoves"> | string;
 }
 
 /*
@@ -35,11 +32,11 @@ export const H2: FC<PropsWithChildren<IHeadingProps>> = ({
   children,
 }) => {
   return (
-    <>
+    <div className="inline-flex align-baseline justify-start">
       <h2 className="inline-block text-xl text-gray-800">
         {`${label} ${prop ?? ""}`}
       </h2>
       {children ?? null}
-    </>
+    </div>
   );
 };
