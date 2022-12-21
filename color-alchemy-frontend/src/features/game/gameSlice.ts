@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState, AppThunk } from "../../app/store";
 import { fetchGame } from "./gameAPI";
 import { delta } from "../../app/utils";
-import { TRange, TColor, TColorComponent } from "../../app/types";
+import { TRange, TColor, TColorComponent, TSourceDim } from "../../app/types";
 
 export interface IGameState {
   loading: boolean;
@@ -10,6 +10,7 @@ export interface IGameState {
   width: number;
   height: number;
   maxMoves: number;
+  steps: number;
   target: [TColorComponent?, TColorComponent?, TColorComponent?];
   gameBoardSources: {
     top: TColor[];
@@ -28,6 +29,7 @@ const initialState: IGameState = {
   width: 0,
   height: 0,
   maxMoves: Infinity,
+  steps: 0,
   gameBoardSources: {
     top: [],
     right: [],
@@ -53,9 +55,6 @@ export const gameSlice = createSlice({
   name: "game",
   initialState,
   reducers: {
-    step: (state) => {
-      state.maxMoves -= 1;
-    },
     init: (state) => {
       state.gameBoardSources.top = Array(state.width).fill({
         r: 0,
@@ -93,6 +92,21 @@ export const gameSlice = createSlice({
         }
       ) as TRange<0, 101>;
     },
+    step: (state) => {
+      state.steps += 1;
+    },
+    initStep: (state, action) => {
+      const {
+        sourceDim,
+        sourceIdx,
+      }: { sourceDim: TSourceDim; sourceIdx: number } = action.payload;
+      state.gameBoardSources[sourceDim][sourceIdx] =
+        state.steps === 1
+          ? { r: 255, g: 0, b: 0 }
+          : state.steps === 2
+          ? { r: 0, g: 255, b: 0 }
+          : { r: 0, g: 0, b: 255 };
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -115,7 +129,7 @@ export const gameSlice = createSlice({
   },
 });
 
-export const { step, init } = gameSlice.actions;
+export const { step, init, initStep } = gameSlice.actions;
 
 export const selectGame = (state: RootState) => state.game;
 export const selectClosestTile = (state: RootState) =>
@@ -132,5 +146,6 @@ export const selectGameBoard = (state: RootState) => ({
 });
 export const selectSources = (state: RootState) => state.game.gameBoardSources;
 export const selectTiles = (state: RootState) => state.game.gameBoardTiles;
+export const selectMoves = (state: RootState) => state.game.steps;
 
 export default gameSlice.reducer;

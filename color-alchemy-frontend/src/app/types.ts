@@ -18,3 +18,4 @@ export type TColor = {
   g: TColorComponent;
   b: TColorComponent;
 };
+export type TSourceDim = "top" | "right" | "bottom" | "left";

@@ -34,13 +34,13 @@ export const GameBoard = () => {
     <div className="inline-flex flex-row">
       <div className="inline-flex flex-col align-middle justify-center">
         {left.map((color: TColor, i: number) => {
-          return <Source color={color} key={`left_${i}`} />;
+          return <Source color={color} key={`left_${i}`} x="left" y={i} />;
         })}
       </div>
       <div className="inline-flex flex-col align-middle justify-center">
         <div className="inline-flex flex-row align-middle justify-center">
           {top.map((color: TColor, i: number) => {
-            return <Source color={color} key={`top_${i}`} />;
+            return <Source color={color} key={`top_${i}`} x="top" y={i} />;
           })}
         </div>
         <div className="inline-flex flex-col align-middle justify-center">
@@ -61,13 +61,15 @@ export const GameBoard = () => {
         </div>
         <div className="inline-flex flex-row align-middle justify-center">
           {bottom.map((color: TColor, i: number) => {
-            return <Source color={color} key={`bottom_${i}`} />;
+            return (
+              <Source color={color} key={`bottom_${i}`} x="bottom" y={i} />
+            );
           })}
         </div>
       </div>
       <div className="inline-flex flex-col align-middle justify-center">
         {right.map((color: TColor, i: number) => {
-          return <Source color={color} key={`right_${i}`} />;
+          return <Source color={color} key={`right_${i}`} x="right" y={i} />;
         })}
       </div>
     </div>

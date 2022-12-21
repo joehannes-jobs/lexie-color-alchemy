@@ -10,13 +10,15 @@ export const delta = (
   { r: r1, g: g1, b: b1 }: TColor,
   { r: r2, g: g2, b: b2 }: TColor
 ): number => {
-  return Math.round(
-    (1 / 255) *
-      (1 / Math.sqrt(3)) *
-      Math.sqrt(
-        Math.pow(r1 - r2, 2) + Math.pow(g1 - g2, 2) + Math.pow(b1 - b2, 2)
-      ) *
-      100
+  return (
+    Math.round(
+      (1 / 255) *
+        (1 / Math.sqrt(3)) *
+        Math.sqrt(
+          Math.pow(r1 - r2, 2) + Math.pow(g1 - g2, 2) + Math.pow(b1 - b2, 2)
+        ) *
+        10000
+    ) / 100
   );
 };
 
