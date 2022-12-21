@@ -13,5 +13,5 @@ interface ISourceProps {
  * @returns the React Component Markup
  */
 export const Source: FC<ISourceProps> = ({ color = { r: 0, g: 0, b: 0 } }) => {
-  return <Tile color={color} classNames="rounded-full" />;
+  return <Tile color={color} classNames="!rounded-full" />;
 };

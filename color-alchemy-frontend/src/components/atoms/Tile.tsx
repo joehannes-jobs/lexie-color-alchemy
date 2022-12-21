@@ -33,27 +33,27 @@ export const Tile: FC<ITileProps> = ({
 }) => {
   const closestTilePos = useAppSelector(selectClosestTile);
   const [isClosest, setIsClosest] = useState(false);
-  const classNames = classnames(
-    "inline-block",
-    "rounded",
-    "border-2",
-    "border-gray-200",
-    {
-      "border-red": isClosest,
-    },
-    additionalClassNames
-  );
-
   useEffect(() => {
     setIsClosest(closestTilePos[0] === x && closestTilePos[1] === y);
   }, [closestTilePos, x, y]);
+
+  const classNames = classnames(
+    "inline-block",
+    "rounded-md",
+    "border-2",
+    "border-gray-200",
+    {
+      "!border-red-600": isClosest,
+    },
+    additionalClassNames
+  );
 
   return (
     <div
       className={classNames}
       style={{
-        width: "1.5rem",
-        height: "1.5rem",
+        width: "1.75rem",
+        height: "1.75rem",
         backgroundColor: `rgb(
           ${color.r as number},
           ${color.g as number},

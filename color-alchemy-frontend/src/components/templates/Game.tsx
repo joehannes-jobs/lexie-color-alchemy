@@ -18,6 +18,7 @@ import {
   IGameState,
 } from "../../features/game/gameSlice";
 import { TColor, TColorComponent } from "../../app/types";
+import { GameBoard } from "components/molecules/Gameboard";
 
 export const Game = () => {
   const {
@@ -38,20 +39,25 @@ export const Game = () => {
   }, []);
 
   return (
-    <main className="inline-flex flex-col mx-auto leading-810 gap-2">
-      <Title />
-      <UserHeading userId={userId as unknown as Pick<IGameState, "userId">} />
-      <MovesHeading
-        maxMoves={moves as unknown as Pick<IGameState, "maxMoves">}
-      />
-      <TargetHeading
-        targetColor={{
-          r: targetColor[0] ?? 0,
-          g: targetColor[1] ?? 0,
-          b: targetColor[2] ?? 0,
-        }}
-      />
-      <ClosestColorHeading closestColor={closestColor as TColor} />
-    </main>
+    <div className="flex flex-col justify-start gap-4">
+      <header className="inline-flex flex-col leading-810 gap-4">
+        <Title />
+        <UserHeading userId={userId as unknown as Pick<IGameState, "userId">} />
+        <MovesHeading
+          maxMoves={moves as unknown as Pick<IGameState, "maxMoves">}
+        />
+        <TargetHeading
+          targetColor={{
+            r: targetColor[0] ?? 0,
+            g: targetColor[1] ?? 0,
+            b: targetColor[2] ?? 0,
+          }}
+        />
+        <ClosestColorHeading closestColor={closestColor as TColor} />
+      </header>
+      <main className="inline-flex">
+        <GameBoard />
+      </main>
+    </div>
   );
 };
