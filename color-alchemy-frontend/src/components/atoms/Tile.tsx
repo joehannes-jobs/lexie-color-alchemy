@@ -10,7 +10,7 @@ import {
   selectClosestTile,
 } from "../../features/game/gameSlice";
 
-interface ITileProps {
+export interface ITileProps {
   color: TColor;
   x?: number;
   y?: number;
@@ -60,8 +60,6 @@ export const Tile: FC<ITileProps> = ({
           ${color.b as number}
         )`,
       }}
-    >
-      &nbsp;
-    </div>
+    ></div>
   );
 };

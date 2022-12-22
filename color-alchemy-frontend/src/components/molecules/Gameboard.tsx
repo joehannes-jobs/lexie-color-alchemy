@@ -15,8 +15,8 @@ import {
   selectClosestColor,
   IGameState,
 } from "../../features/game/gameSlice";
-import { Tile } from "components/atoms/Tile";
-import { Source } from "components/atoms/Source";
+import { Tile } from "components/molecules/Tile";
+import { Source } from "components/molecules/Source";
 
 export const GameBoard = () => {
   const { w, h } = useAppSelector(selectGameBoard);

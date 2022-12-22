@@ -107,6 +107,21 @@ export const gameSlice = createSlice({
           ? { r: 0, g: 255, b: 0 }
           : { r: 0, g: 0, b: 255 };
     },
+    calculate: (state, action) => {
+      const { x, y } = action.payload;
+
+      if (typeof x === "string") {
+        // state.gameBoardSources[x][y];
+      } else {
+        state.gameBoardTiles[x][y];
+      }
+    },
+    put: (state, action) => {
+      const { color, x, y }: { color: TColor; x: TSourceDim; y: number } =
+        action.payload;
+
+      state.gameBoardSources[x][y] = color;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -129,7 +144,7 @@ export const gameSlice = createSlice({
   },
 });
 
-export const { step, init, initStep } = gameSlice.actions;
+export const { step, init, initStep, put } = gameSlice.actions;
 
 export const selectGame = (state: RootState) => state.game;
 export const selectClosestTile = (state: RootState) =>
