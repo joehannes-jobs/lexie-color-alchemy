@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState, AppThunk } from "../../app/store";
 import { fetchGame } from "./gameAPI";
-import { delta } from "../../app/utils";
+import { delta, bleed, shine, isShiny } from "../../app/utils";
 import { TRange, TColor, TColorComponent, TSourceDim } from "../../app/types";
 
 export interface IGameState {
@@ -108,19 +108,217 @@ export const gameSlice = createSlice({
           : { r: 0, g: 0, b: 255 };
     },
     calculate: (state, action) => {
-      const { x, y } = action.payload;
+      const {
+        i,
+        j,
+        x,
+        y,
+      }: { color?: TColor; i?: number; j?: number; x: TSourceDim; y: number } =
+        action.payload;
+      const shiningColors: (TColor[] | null)[] = [];
+      let {
+        color,
+      }: { color?: TColor; i?: number; j?: number; x: TSourceDim; y: number } =
+        action.payload;
 
-      if (typeof x === "string") {
-        // state.gameBoardSources[x][y];
-      } else {
-        state.gameBoardTiles[x][y];
+      if (
+        typeof color === "undefined" &&
+        typeof i === "number" &&
+        typeof j === "number"
+      ) {
+        color = state.gameBoardTiles[i][j];
+      }
+
+      switch (x) {
+        case "top":
+          shiningColors.push(
+            state.gameBoardSources["left"].map((c, i, arr: TColor[]) =>
+              isShiny(c) ? bleed(c, i, arr.length) : c
+            ),
+            state.gameBoardSources["right"].map((c, i, arr: TColor[]) =>
+              isShiny(c) ? bleed(c, arr.length - 1 - i, arr.length) : c
+            ),
+            isShiny(state.gameBoardSources["bottom"][y])
+              ? state.gameBoardTiles
+                  .map((cRow, i, arr) =>
+                    bleed(state.gameBoardSources["bottom"][y], i, arr.length)
+                  )
+                  .reverse()
+              : null
+          );
+
+          state.gameBoardTiles.forEach((_, i, arr) => {
+            state.gameBoardTiles[i][y] = shine(
+              bleed(color!, i, arr.length),
+              ...shiningColors
+                .filter((shinyArr) => !!shinyArr)
+                .map(
+                  (shinyArr) =>
+                    shinyArr?.at(i) || ({ r: 0, g: 0, b: 0 } as TColor)
+                )
+            );
+          });
+          break;
+        case "bottom":
+          shiningColors.push(
+            state.gameBoardSources["left"].map((c, i, arr: TColor[]) =>
+              isShiny(c) ? bleed(c, i, arr.length) : c
+            ),
+            state.gameBoardSources["right"].map((c, i, arr: TColor[]) =>
+              isShiny(c) ? bleed(c, arr.length - 1 - i, arr.length) : c
+            ),
+            isShiny(state.gameBoardSources["top"][y])
+              ? state.gameBoardTiles
+                  .map((c, i, arr) =>
+                    bleed(state.gameBoardSources["top"][y], i, arr.length)
+                  )
+                  .reverse()
+              : null
+          );
+
+          [...state.gameBoardTiles].forEach((_, i, arr) => {
+            state.gameBoardTiles[arr.length - 1 - i][y] = shine(
+              bleed(color!, i, arr.length),
+              ...shiningColors
+                .filter((shinyArr) => !!shinyArr)
+                .map(
+                  (shinyArr) =>
+                    shinyArr?.at(i) || ({ r: 0, g: 0, b: 0 } as TColor)
+                )
+            );
+          });
+          break;
+        case "left":
+          shiningColors.push(
+            isShiny(state.gameBoardSources["right"][y])
+              ? state.gameBoardTiles[y]
+                  .map((c, i, arr: TColor[]) =>
+                    bleed(state.gameBoardSources["right"][y], i, arr.length)
+                  )
+                  .reverse()
+              : null,
+            state.gameBoardSources["top"].map((c) =>
+              isShiny(c) ? bleed(c, y, state.gameBoardTiles.length) : c
+            ),
+            state.gameBoardSources["bottom"].map((c) =>
+              isShiny(c) ? bleed(c, y, state.gameBoardTiles.length) : c
+            )
+          );
+
+          state.gameBoardTiles[y].forEach((_, i, arr) => {
+            state.gameBoardTiles[y][i] = shine(
+              bleed(color!, i, arr.length),
+              ...shiningColors
+                .filter((shinyArr) => Boolean(shinyArr))
+                .map((shinyArr) => shinyArr![i])
+            );
+          });
+          break;
+        case "right":
+          shiningColors.push(
+            isShiny(state.gameBoardSources["left"][y])
+              ? state.gameBoardTiles[y]
+                  .map((c, i, arr: TColor[]) =>
+                    bleed(state.gameBoardSources["left"][y], i, arr.length)
+                  )
+                  .reverse()
+              : null,
+            state.gameBoardSources["top"].map((c) =>
+              isShiny(c) ? bleed(c, y, state.gameBoardTiles.length) : c
+            ),
+            state.gameBoardSources["bottom"].map((c) =>
+              isShiny(c) ? bleed(c, y, state.gameBoardTiles.length) : c
+            )
+          );
+
+          state.gameBoardTiles[y].forEach((_, i, arr) => {
+            state.gameBoardTiles[y][i] = shine(
+              bleed(color!, arr.length - 1 - i, arr.length),
+              ...shiningColors
+                .filter((shinyArr) => Boolean(shinyArr))
+                .map((shinyArr) => shinyArr![i])
+            );
+          });
+          break;
+        default:
+          console.warn("Error: Couldn't detect dimension of row/col", x);
       }
     },
     put: (state, action) => {
-      const { color, x, y }: { color: TColor; x: TSourceDim; y: number } =
+      const { i, j, x, y }: { i: number; j: number; x: TSourceDim; y: number } =
         action.payload;
 
-      state.gameBoardSources[x][y] = color;
+      state.gameBoardSources[x][y] = state.gameBoardTiles[i][j] as TColor;
+    },
+    deltaCheck: (state, action) => {
+      const { x, y }: { x: TSourceDim; y: number } = action.payload;
+      const [ox, oy]: [number, number] = state.closestColorTile;
+
+      if (
+        state.delta !==
+        delta(state.gameBoardTiles[ox][oy], {
+          r: state.target[0] ?? 0,
+          g: state.target[1] ?? 0,
+          b: state.target[2] ?? 0,
+        })
+      ) {
+        state.delta = 100;
+
+        state.gameBoardTiles.forEach((tileRow, i) => {
+          tileRow.forEach((c, j) => {
+            const d = delta(c, {
+              r: state.target[0] ?? 255,
+              g: state.target[1] ?? 255,
+              b: state.target[2] ?? 255,
+            });
+
+            if (d < state.delta) {
+              state.delta = d as TRange<0, 101>;
+              state.closestColorTile = [i, j];
+            }
+          });
+        });
+      }
+
+      switch (x) {
+        case "top":
+        case "bottom":
+          state.gameBoardTiles.forEach((tileRow, i) => {
+            const d = delta(tileRow[y], {
+              r: state.target[0] ?? 255,
+              g: state.target[1] ?? 255,
+              b: state.target[2] ?? 255,
+            });
+
+            if (d < state.delta) {
+              state.delta = d as TRange<0, 101>;
+              state.closestColorTile = [i, y];
+            }
+          });
+          break;
+        case "left":
+        case "right":
+          state.gameBoardTiles[y].forEach((tile, i) => {
+            const d = delta(tile, {
+              r: state.target[0] ?? 255,
+              g: state.target[1] ?? 255,
+              b: state.target[2] ?? 255,
+            });
+
+            if (d < state.delta) {
+              state.delta = d as TRange<0, 101>;
+              state.closestColorTile = [y, i];
+            }
+          });
+          break;
+      }
+    },
+    reset: (state) => {
+      state.delta = 100;
+      state.closestColorTile = [0, 0];
+      state.maxMoves = Infinity;
+      state.target = [255, 255, 255];
+      state.steps = 0;
     },
   },
   extraReducers: (builder) => {
@@ -144,7 +342,8 @@ export const gameSlice = createSlice({
   },
 });
 
-export const { step, init, initStep, put } = gameSlice.actions;
+export const { step, init, initStep, put, calculate, deltaCheck, reset } =
+  gameSlice.actions;
 
 export const selectGame = (state: RootState) => state.game;
 export const selectClosestTile = (state: RootState) =>
