@@ -23,17 +23,19 @@ export const delta = (
 };
 
 /**
- * Calculates a new color via shining/blending various colors together additively
+ * @description Calculates a new color via shining/blending various colors together additively
  * @param c - base color
  * @param rest - shined colors array
  * @returns the calculated compound color
  */
-export const shined = (c: TColor, ...rest: TColor[]): TColor => {
+export const shine = (c: TColor, ...rest: TColor[]): TColor => {
   const comp = (component: keyof TColor) =>
-    rest.reduce(
-      (acc: number, cur: TColor) => acc + cur[component],
-      c[component]
-    );
+    rest.length
+      ? rest.reduce((acc: number, cur: TColor) => {
+          return acc + cur[component];
+        }, c[component])
+      : c[component];
+
   const r = comp("r");
   const g = comp("g");
   const b = comp("b");
@@ -47,15 +49,26 @@ export const shined = (c: TColor, ...rest: TColor[]): TColor => {
 };
 
 /**
- * @param baseColor - the gameboards tile to be shined
+ * @description checks if a color is shiny regarding the additive color space
+ * @param c - color
+ * @returns true or false, wether full black or not (wether will influence at all if shined)
+ */
+export const isShiny = (c: TColor): boolean => {
+  const { r, g, b } = c;
+
+  return !(r === 0 && g === 0 && b === 0);
+};
+
+/**
+ * @param baseColor - the gameboards tile to be bleeded/shined
  * @param i - the index pos of baseColor in the current row/col of the gameboard
  * @param len - the length of the cur row/col of the gameboard
  * @returns bleeded baseColor (according to tiles' index)
  */
 export const bleed = (baseColor: TColor, i: number, len: number): TColor => {
   return {
-    r: ((baseColor.r * (len - i)) / (len + 1)) as TColorComponent,
-    g: ((baseColor.g * (len - i)) / (len + 1)) as TColorComponent,
-    b: ((baseColor.b * (len - i)) / (len + 1)) as TColorComponent,
+    r: ((baseColor.r * (len + 1 - i)) / (len + 1)) as TColorComponent,
+    g: ((baseColor.g * (len + 1 - i)) / (len + 1)) as TColorComponent,
+    b: ((baseColor.b * (len + 1 - i)) / (len + 1)) as TColorComponent,
   };
 };
