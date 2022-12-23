@@ -1,15 +1,25 @@
-import React, { FC } from "react";
+import React, { FC, useMemo } from "react";
 import { useDrop } from "react-dnd";
 
 import { useAppSelector, useAppDispatch } from "../../app/hooks";
 import {
   selectMoves,
+  deltaCheck,
   step,
   initStep,
   put,
+  calculate,
 } from "../../features/game/gameSlice";
-import { ISourceProps, Source as BaseSource } from "../atoms/Source";
+import {
+  ISourceProps as IBaseSourceProps,
+  Source as BaseSource,
+} from "../atoms/Source";
 import { TColor, TSourceDim } from "../../app/types";
+
+interface ISourceProps extends IBaseSourceProps {
+  x: TSourceDim;
+  y: number;
+}
 
 /*
  * @description - DnD Wrapper-Component for Sources
@@ -25,23 +35,31 @@ export const Source: FC<ISourceProps> = ({
 }) => {
   const moves = useAppSelector(selectMoves);
   const dispatch = useAppDispatch();
+  const memoCanDrop = useMemo(() => moves > 2, [moves]);
 
   const [{ isOver, canDrop }, drop] = useDrop(() => ({
     accept: "all",
-    drop: (item: { color: TColor }, monitor) => {
-      console.log("dropped");
-      const payload: { color: TColor; x: TSourceDim; y: number } = {
-        color: item.color,
+    drop: ({ x: i, y: j }: { x: number; y: number }, monitor) => {
+      /* this lib doesn't respect react lifecycle somehow! arghhh!
+      if (!canDrop) {
+        console.warn("Cannot drop during initial 3 steps!");
+        return;
+      }*/
+      const payload: { i: number; j: number; x: TSourceDim; y: number } = {
         x,
         y,
+        i,
+        j,
       };
-
+      dispatch(step());
       dispatch(put(payload));
+      dispatch(calculate(payload));
+      dispatch(deltaCheck({ x, y }));
     },
-    canDrop: (item, monitor) => moves > 2,
+    //canDrop: (item, monitor) => moves > 2, //seems to be havinga problem with react lifecycle
     collect: (monitor) => ({
       isOver: !!monitor.isOver(),
-      canDrop: !!monitor.canDrop(),
+      canDrop: memoCanDrop,
     }),
   }));
 
@@ -54,6 +72,18 @@ export const Source: FC<ISourceProps> = ({
           sourceIdx: y,
         })
       );
+      dispatch(
+        calculate({
+          color: {
+            r: moves === 0 ? 255 : 0,
+            g: moves === 1 ? 255 : 0,
+            b: moves === 2 ? 255 : 0,
+          },
+          x,
+          y,
+        })
+      );
+      dispatch(deltaCheck({ x, y }));
     }
   };
 
@@ -64,9 +94,10 @@ export const Source: FC<ISourceProps> = ({
       ref={drop}
       style={{
         opacity: isOver ? 0.5 : 1,
+        cursor: moves > 2 ? "default" : "pointer",
       }}
     >
-      <BaseSource color={color} x={x} y={y} />
+      <BaseSource color={color} />
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import React, { useState, useCallback, FC } from "react";
+import React, { useState, useMemo, useCallback, FC } from "react";
 import { useDrag } from "react-dnd";
 import classnames from "classnames";
 
@@ -21,18 +21,19 @@ export const Tile: FC<ITileProps> = ({
 }) => {
   const moves = useAppSelector(selectMoves);
   const canDrag = useCallback(() => moves > 2, [moves]);
+  const memoizedColor = useMemo(() => color, [color]);
   const [{ isDragging }, drag, dragPreview] = useDrag(() => ({
     type: "all",
-    item: { color },
+    item: { x, y },
     collect: (monitor) => ({
       isDragging: !!monitor.isDragging(),
+      canDrag,
     }),
-    // canDrag, //seems to be having problems with react lifecycle
   }));
 
   return (
     <div
-      ref={dragPreview}
+      ref={moves > 2 ? dragPreview : null}
       className="inline-flex"
       style={{
         backgroundColor: "rgb(color.r, color.g, color.b)",
@@ -42,7 +43,7 @@ export const Tile: FC<ITileProps> = ({
     >
       <div
         role="Handle"
-        ref={drag}
+        ref={moves > 2 ? drag : null}
         className="inline-flex"
         style={{
           opacity: isDragging ? 0.5 : 1,

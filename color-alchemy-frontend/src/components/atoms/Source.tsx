@@ -8,8 +8,6 @@ import { TColor, TSourceDim } from "../../app/types";
 export interface ISourceProps {
   onClick?: () => void;
   color: TColor;
-  x: TSourceDim;
-  y: number;
 }
 
 /*
@@ -20,8 +18,6 @@ export interface ISourceProps {
 export const Source: FC<ISourceProps> = ({
   onClick: clickHandler = () => null,
   color = { r: 0, g: 0, b: 0 },
-  x,
-  y,
 }) => {
   const moves = useAppSelector(selectMoves);
   const dispatch = useAppDispatch();
