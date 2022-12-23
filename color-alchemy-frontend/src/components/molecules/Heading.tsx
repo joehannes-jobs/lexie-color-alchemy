@@ -12,6 +12,7 @@ interface IUserHeadingProps {
 
 interface IMovesHeadingProps {
   maxMoves: Pick<IGameState, "maxMoves">;
+  steps: Pick<IGameState, "steps">;
 }
 
 interface ITargetHeadingProps {
@@ -41,8 +42,8 @@ export const UserHeading: FC<IUserHeadingProps> = ({ userId }) => (
  * @param maxMoves - the number of moves left, initially maxMoves
  * @returns a simple Heading React component
  */
-export const MovesHeading: FC<IMovesHeadingProps> = ({ maxMoves }) => (
-  <H2 label="Moves left:" prop={maxMoves} />
+export const MovesHeading: FC<IMovesHeadingProps> = ({ maxMoves, steps }) => (
+  <H2 label="Moves left:" prop={`${Number(maxMoves) - Number(steps)}`} />
 );
 
 /*
