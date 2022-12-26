@@ -1,5 +1,4 @@
-import React, { useState, useEffect, FC } from "react";
-import classnames from "classnames";
+import React, { useEffect, FC } from "react";
 
 import {
   Title,
@@ -12,21 +11,24 @@ import {
 import { useAppSelector, useAppDispatch } from "../../app/hooks";
 import {
   fetchGameAsync,
-  step,
   selectGame,
   selectClosestColor,
   IGameState,
   reset,
   init,
 } from "../../features/game/gameSlice";
-import { TColor, TColorComponent } from "../../app/types";
-import { GameBoard } from "components/molecules/Gameboard";
+import { GameBoard } from "../molecules/Gameboard";
 
-export const Game = () => {
+/**
+ * @description composite component for assembling the game pieces
+ * @date 12/26/2022 - 2:36:22 PM
+ *
+ * @param props - Headings params
+ * @returns the rendered game component
+ */
+export const Game: FC = () => {
   const {
     userId,
-    width: w,
-    height: h,
     target: targetColor,
     maxMoves: moves,
     steps,
@@ -55,7 +57,7 @@ export const Game = () => {
       dispatch(fetchGameAsync(userId));
       dispatch(init());
     }
-  }, [delta, moves, steps]);
+  }, [delta, moves, steps, userId, dispatch]);
 
   return (
     <div className="flex flex-col justify-start gap-4">
@@ -73,7 +75,7 @@ export const Game = () => {
             b: targetColor[2] ?? 0,
           }}
         />
-        <ClosestColorHeading closestColor={closestColor as TColor} />
+        <ClosestColorHeading closestColor={closestColor} />
       </header>
       <main className="inline-flex">
         <GameBoard />

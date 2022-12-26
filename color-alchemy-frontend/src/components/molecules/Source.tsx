@@ -1,4 +1,4 @@
-import React, { FC, useMemo } from "react";
+import React, { FC } from "react";
 import { useDrop } from "react-dnd";
 
 import { useAppSelector, useAppDispatch } from "../../app/hooks";
@@ -14,7 +14,7 @@ import {
   ISourceProps as IBaseSourceProps,
   Source as BaseSource,
 } from "../atoms/Source";
-import { TColor, TSourceDim } from "../../app/types";
+import { TSourceDim } from "../../app/types";
 
 interface ISourceProps extends IBaseSourceProps {
   x: TSourceDim;
@@ -35,16 +35,10 @@ export const Source: FC<ISourceProps> = ({
 }) => {
   const moves = useAppSelector(selectMoves);
   const dispatch = useAppDispatch();
-  const memoCanDrop = useMemo(() => moves > 2, [moves]);
 
-  const [{ isOver, canDrop }, drop] = useDrop(() => ({
+  const [{ isOver }, drop] = useDrop(() => ({
     accept: "all",
-    drop: ({ x: i, y: j }: { x: number; y: number }, monitor) => {
-      /* this lib doesn't respect react lifecycle somehow! arghhh!
-      if (!canDrop) {
-        console.warn("Cannot drop during initial 3 steps!");
-        return;
-      }*/
+    drop: ({ x: i, y: j }: { x: number; y: number }) => {
       const payload: { i: number; j: number; x: TSourceDim; y: number } = {
         x,
         y,
@@ -56,10 +50,8 @@ export const Source: FC<ISourceProps> = ({
       dispatch(calculate(payload));
       dispatch(deltaCheck({ x, y }));
     },
-    //canDrop: (item, monitor) => moves > 2, //seems to be havinga problem with react lifecycle
     collect: (monitor) => ({
       isOver: !!monitor.isOver(),
-      canDrop: memoCanDrop,
     }),
   }));
 

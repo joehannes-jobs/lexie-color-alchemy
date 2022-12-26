@@ -1,10 +1,9 @@
 import React, { FC } from "react";
-import { IGameState, selectClosestColor } from "../../features/game/gameSlice";
+import { IGameState } from "../../features/game/gameSlice";
 import { TColor } from "../../app/types";
 import { H1, H2 } from "../atoms/Heading";
 import { Tile } from "../atoms/Tile";
-import { Delta } from "../atoms/Delta";
-import { useAppSelector } from "../../app/hooks";
+import { Delta } from "./Delta";
 
 interface IUserHeadingProps {
   userId: Pick<IGameState, "userId">;

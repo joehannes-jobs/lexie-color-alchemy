@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { FC, useEffect } from "react";
 import { useAppSelector, useAppDispatch } from "../../app/hooks";
 import {
   init,
@@ -8,17 +8,16 @@ import {
 } from "../../features/game/gameSlice";
 import { TColor } from "../../app/types";
 
-import {
-  fetchGameAsync,
-  step,
-  selectGame,
-  selectClosestColor,
-  IGameState,
-} from "../../features/game/gameSlice";
 import { Tile } from "components/molecules/Tile";
 import { Source } from "components/molecules/Source";
 
-export const GameBoard = () => {
+/**
+ * @description Composite component to display tiles and sources, the gameboard
+ * @date 12/26/2022 - 3:55:12 PM
+ *
+ * @returns the rendered gameboard
+ */
+export const GameBoard: FC = () => {
   const { w, h } = useAppSelector(selectGameBoard);
   const { top, right, bottom, left } = useAppSelector(selectSources);
   const tiles = useAppSelector(selectTiles);
@@ -28,7 +27,7 @@ export const GameBoard = () => {
     if (w > 0 && h > 0) {
       dispatch(init());
     }
-  }, [w, h]);
+  }, [w, h, dispatch]);
 
   return (
     <div className="inline-flex flex-row">

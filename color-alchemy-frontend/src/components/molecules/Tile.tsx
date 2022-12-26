@@ -1,10 +1,10 @@
-import React, { useState, useMemo, useCallback, FC } from "react";
+import React, { FC } from "react";
 import { useDrag } from "react-dnd";
-import classnames from "classnames";
 
 import { ITileProps, Tile as BaseTile } from "../atoms/Tile";
-import { useAppSelector, useAppDispatch } from "../../app/hooks";
-import { put, selectMoves } from "../../features/game/gameSlice";
+import { useAppSelector } from "../../app/hooks";
+import { selectMoves } from "../../features/game/gameSlice";
+
 /*
  * @description - DnD Wrapper-Component for Gameboard tiles
  * @param color - the current color of the tile
@@ -20,14 +20,11 @@ export const Tile: FC<ITileProps> = ({
   classNames = "",
 }) => {
   const moves = useAppSelector(selectMoves);
-  const canDrag = useCallback(() => moves > 2, [moves]);
-  const memoizedColor = useMemo(() => color, [color]);
   const [{ isDragging }, drag, dragPreview] = useDrag(() => ({
     type: "all",
     item: { x, y },
     collect: (monitor) => ({
       isDragging: !!monitor.isDragging(),
-      canDrag,
     }),
   }));
 

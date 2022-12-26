@@ -1,14 +1,9 @@
 import React, { useState, useEffect, FC } from "react";
 import classnames from "classnames";
 
-import { useAppSelector, useAppDispatch } from "../../app/hooks";
-import { TColor, TColorComponent } from "../../app/types";
-import {
-  fetchGameAsync,
-  step,
-  selectGame,
-  selectClosestTile,
-} from "../../features/game/gameSlice";
+import { useAppSelector } from "../../app/hooks";
+import { TColor } from "../../app/types";
+import { selectClosestTile } from "../../features/game/gameSlice";
 
 export interface ITileProps {
   color: TColor;
