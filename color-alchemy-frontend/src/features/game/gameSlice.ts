@@ -1,9 +1,13 @@
-import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { RootState, AppThunk } from "../../app/store";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import * as R from "ramda";
+import { RootState } from "../../app/store";
 import { fetchGame } from "./gameAPI";
 import { delta, bleed, shine, isShiny } from "../../app/utils";
 import { TRange, TColor, TColorComponent, TSourceDim } from "../../app/types";
 
+/*
+ * @description redux store type definition
+ */
 export interface IGameState {
   loading: boolean;
   userId: string;
@@ -56,40 +60,27 @@ export const gameSlice = createSlice({
   initialState,
   reducers: {
     init: (state) => {
-      state.gameBoardSources.top = Array(state.width).fill({
+      const color: TColor = {
         r: 0,
         g: 0,
         b: 0,
-      });
-      state.gameBoardSources.right = Array(state.height).fill({
-        r: 0,
-        g: 0,
-        b: 0,
-      });
-      state.gameBoardSources.bottom = Array(state.width).fill({
-        r: 0,
-        g: 0,
-        b: 0,
-      });
-      state.gameBoardSources.left = Array(state.height).fill({
-        r: 0,
-        g: 0,
-        b: 0,
-      });
+      };
+
+      state.gameBoardSources.top = Array(state.width).fill(color);
+      state.gameBoardSources.right = Array(state.height).fill(color);
+      state.gameBoardSources.bottom = Array(state.width).fill(color);
+      state.gameBoardSources.left = Array(state.height).fill(color);
       state.gameBoardTiles = Array(state.height).fill(
-        Array(state.width).fill({ r: 0, g: 0, b: 0 })
+        Array(state.width).fill(color)
       );
+
       state.delta = delta(
         {
           r: state.target[0] as TColorComponent,
           g: state.target[1] as TColorComponent,
           b: state.target[2] as TColorComponent,
         },
-        {
-          r: 0,
-          g: 0,
-          b: 0,
-        }
+        color
       ) as TRange<0, 101>;
     },
     step: (state) => {
@@ -100,12 +91,12 @@ export const gameSlice = createSlice({
         sourceDim,
         sourceIdx,
       }: { sourceDim: TSourceDim; sourceIdx: number } = action.payload;
-      state.gameBoardSources[sourceDim][sourceIdx] =
-        state.steps === 1
-          ? { r: 255, g: 0, b: 0 }
-          : state.steps === 2
-          ? { r: 0, g: 255, b: 0 }
-          : { r: 0, g: 0, b: 255 };
+      const color = [
+        { r: 255, g: 0, b: 0 } as TColor,
+        { r: 0, g: 255, b: 0 } as TColor,
+        { r: 0, g: 0, b: 255 } as TColor,
+      ];
+      state.gameBoardSources[sourceDim][sourceIdx] = color[state.steps - 1];
     },
     calculate: (state, action) => {
       const {
@@ -113,13 +104,9 @@ export const gameSlice = createSlice({
         j,
         x,
         y,
-      }: { color?: TColor; i?: number; j?: number; x: TSourceDim; y: number } =
-        action.payload;
+      }: { i?: number; j?: number; x: TSourceDim; y: number } = action.payload;
       const shiningColors: (TColor[] | null)[] = [];
-      let {
-        color,
-      }: { color?: TColor; i?: number; j?: number; x: TSourceDim; y: number } =
-        action.payload;
+      let { color }: { color?: TColor } = action.payload;
 
       if (
         typeof color === "undefined" &&
@@ -176,7 +163,7 @@ export const gameSlice = createSlice({
               : null
           );
 
-          [...state.gameBoardTiles].forEach((_, i, arr) => {
+          state.gameBoardTiles.forEach((_, i, arr) => {
             state.gameBoardTiles[arr.length - 1 - i][y] = shine(
               bleed(color!, i, arr.length),
               ...shiningColors
